@@ -24,21 +24,48 @@ stages:
           # pack one artifact with no version suffix
           - task: CmdLine@2
             inputs:
-              script: 'dotnet pack --output $(Build.StagingDirectory)'
+              script: 'dotnet pack --output $(Build.StagingDirectory)/prod'
           # pack one artifact with WITH suffix
           - task: CmdLine@2
             inputs:
-              script: 'dotnet pack --version-suffix $(Build.BuildNumber) --output $(Build.StagingDirectory)'
+              script: 'dotnet pack --version-suffix $(Build.BuildNumber) --output $(Build.StagingDirectory)/ci'
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: '$(Build.StagingDirectory)'
               artifact: 'nuget'
               publishLocation: 'pipeline'
-  - stage: Deploy
+  - stage: DeployDev
     dependsOn: build
-    displayName: Deploy Nuget
+    displayName: Deploy Dev
     jobs:
-      - deployment: deployNuget
+      - deployment: deployDev
+        environment: AssemblyInfo-DEV
+        displayName: Deploy Nuget
+        pool:
+          vmImage: "ubuntu-latest"
+        strategy:
+          runOnce: #rolling, canary are the other strategies that are supported
+            deploy:
+              steps:
+                - task: NuGetToolInstaller@1
+                  inputs:
+                    versionSpec: '5.x'
+                - task: NuGetAuthenticate@0
+                  inputs:
+                    nuGetServiceConnections: 'Nuget.Org'
+                - task: NuGetCommand@2
+                  inputs:
+                    command: 'push'
+                    packagesToPush: '$(Build.ArtifactStagingDirectory)/ci/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/ci/**/*.symbols.nupkg'
+                    nuGetFeedType: 'internal'
+                    # Publishes to the 'CI' feed
+                    publishVstsFeed: '74b36810-12b7-443b-8f7f-0b69063afebd'
+                    allowPackageConflicts: true
+  - stage: DeployProd
+    dependsOn: DeployDev
+    displayName: Deploy Prod
+    jobs:
+      - deployment: deployProd
         environment: AssemblyInfo-PROD
         displayName: Deploy Nuget
         pool:
@@ -47,6 +74,15 @@ stages:
           runOnce: #rolling, canary are the other strategies that are supported
             deploy:
               steps:
-                - task: CmdLine@2
+                - task: NuGetToolInstaller@1
                   inputs:
-                    script: echo "This is a deployment"
+                    versionSpec: '5.x'
+                - task: NuGetAuthenticate@0
+                  inputs:
+                    nuGetServiceConnections: 'Nuget.Org'
+                - task: NuGetCommand@2
+                  inputs:
+                    command: 'push'
+                    packagesToPush: '$(Build.ArtifactStagingDirectory)/prod/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/prod/**/*.symbols.nupkg'
+                    nuGetFeedType: 'external'
+                    publishFeedCredentials: 'Nuget.Org'
