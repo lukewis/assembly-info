@@ -39,7 +39,7 @@ namespace AssemblyInfo
             Console.Write("Binding Redirect:");
             Console.WriteLine(@$"
     <dependentAssembly>  
-        <assemblyIdentity name=""{name.Name}""  publicKeyToken=""{GetPublicKey(name)}"" culture=""{name.CultureInfo.Name}"" />  
+        <assemblyIdentity name=""{name.Name}""  publicKeyToken=""{GetPublicKey(name)}"" culture=""{name.CultureInfo?.Name}"" />  
         <bindingRedirect oldVersion=""0.0.0.0-{name.Version}"" newVersion=""{name.Version}""/>  
     </dependentAssembly>  
     ");
@@ -52,9 +52,12 @@ namespace AssemblyInfo
             StringBuilder sb = new StringBuilder();
             var token = name.GetPublicKeyToken();
     
-            for (int i = 0; i < token.GetLength(0); i++)
+            if (token != null)
             {
-                sb.Append(String.Format("{0:x2}", token[i]));
+                for (int i = 0; i < token.GetLength(0); i++)
+                {
+                    sb.Append(String.Format("{0:x2}", token[i]));
+                }
             }
 
             return sb.ToString();

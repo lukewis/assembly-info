@@ -3,8 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <VersionPrefix>1.0.0</VersionPrefix>
     <RootNamespace>AssemblyInfo</RootNamespace>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>assembly-info</ToolCommandName>
   </PropertyGroup>
 
 </Project>
