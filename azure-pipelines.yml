@@ -9,22 +9,44 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '6.x'
-    includePreviewVersions: true
-# pack one artifact with no version suffix
-- task: CmdLine@2
-  inputs:
-    script: 'dotnet pack --output $(Build.StagingDirectory)'
-# pack one artifact with WITH suffix
-- task: CmdLine@2
-  inputs:
-    script: 'dotnet pack --version-suffix $(Build.BuildNumber) --output $(Build.StagingDirectory)'
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Build.StagingDirectory)'
-    artifact: 'nuget'
-    publishLocation: 'pipeline'
+stages:
+  - stage: Build
+    pool:
+      vmImage: "ubuntu-latest"
+    jobs:
+      - job: Build
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '6.x'
+              includePreviewVersions: true
+          # pack one artifact with no version suffix
+          - task: CmdLine@2
+            inputs:
+              script: 'dotnet pack --output $(Build.StagingDirectory)'
+          # pack one artifact with WITH suffix
+          - task: CmdLine@2
+            inputs:
+              script: 'dotnet pack --version-suffix $(Build.BuildNumber) --output $(Build.StagingDirectory)'
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: '$(Build.StagingDirectory)'
+              artifact: 'nuget'
+              publishLocation: 'pipeline'
+  - stage: Deploy
+    dependsOn: build
+    displayName: Deploy Nuget
+    jobs:
+      - deployment: deployNuget
+        environment: AssemblyInfo-PROD
+        displayName: Deploy Nuget
+        pool:
+          vmImage: "ubuntu-latest"
+        strategy:
+          runOnce: #rolling, canary are the other strategies that are supported
+            deploy:
+              steps:
+                - task: CmdLine@2
+                  inputs:
+                    script: echo "This is a deployment"
