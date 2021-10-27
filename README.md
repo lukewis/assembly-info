@@ -9,18 +9,12 @@ dotnet run "<FullPathToAssembly>"
 
 # Example Output
 ```
-Name: System.Runtime.dll - System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-Location: /Volumes/Seagate4TB/Users/lawisnie/.nuget/packages/system.runtime/4.3.1/lib/net462/System.Runtime.dll
-
-References: 
-  - mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-  - System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-  - System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
-  - System.ComponentModel.Composition, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+Name: System.Private.CoreLib.dll - System.Private.CoreLib, Version=6.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e
+Location: /usr/local/share/dotnet/shared/Microsoft.NETCore.App/6.0.0-preview.7.21377.19/System.Private.CoreLib.dll
 
 Binding Redirect:
-<dependentAssembly>  
-    <assemblyIdentity name="System.Runtime"  publicKeyToken="b03f5f7f11d50a3a" culture="" />  
-    <bindingRedirect oldVersion="0.0.0.0-4.1.1.1" newVersion="4.1.1.1"/>  
-</dependentAssembly>  
+    <dependentAssembly>  
+        <assemblyIdentity name="System.Private.CoreLib"  publicKeyToken="7cec85d7bea7798e" culture="" />  
+        <bindingRedirect oldVersion="0.0.0.0-6.0.0.0" newVersion="6.0.0.0"/>  
+    </dependentAssembly>
 ```
