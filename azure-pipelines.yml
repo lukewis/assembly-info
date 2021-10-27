@@ -22,6 +22,6 @@ steps:
     versioningScheme: 'off'
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Pipeline.Workspace)'
+    targetPath: '$(Build.StagingDirectory)'
     artifact: 'nuget'
     publishLocation: 'pipeline'
