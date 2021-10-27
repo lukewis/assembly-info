@@ -15,11 +15,14 @@ steps:
     packageType: 'sdk'
     version: '6.x'
     includePreviewVersions: true
-- task: DotNetCoreCLI@2
+# pack one artifact with no version suffix
+- task: CmdLine@2
   inputs:
-    command: 'pack'
-    packagesToPack: '**/*.csproj'
-    versioningScheme: 'off'
+    script: 'dotnet pack --output $(Build.StagingDirectory)'
+# pack one artifact with WITH suffix
+- task: CmdLine@2
+  inputs:
+    script: 'dotnet pack --version-suffix $(Build.BuildNumber) --output $(Build.StagingDirectory)'
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.StagingDirectory)'
